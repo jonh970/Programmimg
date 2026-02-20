@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dungeon of Doors | LOSE (Pit)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="assets/img/wizard.png" alt="Wizard" />
+        <div>
+          <h1>YOU LOSE</h1>
+          <p>The floor was a trap.</p>
+        </div>
+      </div>
+      <span class="badge danger">Loss Condition</span>
+    </div>
+
+    <div class="card">
+      <img class="hero" src="assets/img/cave1.jpeg" alt="Dark pit" />
+      <div class="content">
+        <p class="kicker">
+          You step forward confidently. The stone breaks.
+          You fall into a silent pit and the darkness closes in.
+        </p>
+
+        <div class="choices">
+          <a class="btn" href="index.html">Restart</a>
+          <a class="btn" href="q1.html">Try the first hall</a>
+        </div>
+
+        <hr />
+        <div class="footer">
+          <button class="btn" id="startAudioBtn" type="button">Start ambience</button>
+          <span class="audioHint">Click to enable background sound.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  let audioStarted = false;
+  function startDungeonAmbience() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.35;
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    noise.loop = true;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "lowpass";
+    noiseFilter.frequency.value = 320;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.18;
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(master);
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 48;
+
+    const g = ctx.createGain();
+    g.gain.value = 0.14;
+    osc.connect(g);
+    g.connect(master);
+
+    noise.start();
+    osc.start();
+  }
+
+  document.getElementById("startAudioBtn").addEventListener("click", startDungeonAmbience);
+})();
+</script>
+<div class="hands">
+  <img src="assets/img/hands.png" alt="">
+</div>
+
+</body>
+<audio autoplay loop>
+  <source src="assets/audio/background_music_2.mp3" type="audio/mpeg">
+</audio>
+</html>

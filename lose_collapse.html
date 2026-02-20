@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dungeon of Doors | LOSE (Collapse)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="assets/img/wizard.png" alt="Wizard" />
+        <div>
+          <h1>YOU LOSE</h1>
+          <p>The ceiling gives up.</p>
+        </div>
+      </div>
+      <span class="badge danger">Loss Condition</span>
+    </div>
+
+    <div class="card">
+      <img class="hero" src="assets/img/cave1.jpeg" alt="Rock collapse" />
+      <div class="content">
+        <p class="kicker">
+          Your answer is wrong. The dungeon groans.
+          Stones fall like rain and the path disappears.
+        </p>
+
+        <div class="choices">
+          <a class="btn" href="index.html">Restart</a>
+          <a class="btn" href="q4.html">Return to Question 4</a>
+        </div>
+
+        <hr />
+        <div class="footer">
+          <button class="btn" id="startAudioBtn" type="button">Start ambience</button>
+          <span class="audioHint">Click to enable background sound.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  let audioStarted = false;
+  function startDungeonAmbience() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 40;
+
+    const g = ctx.createGain();
+    g.gain.value = 0.14;
+
+    osc.connect(g);
+    g.connect(master);
+
+    osc.start();
+  }
+
+  document.getElementById("startAudioBtn").addEventListener("click", startDungeonAmbience);
+})();
+</script>
+<div class="hands">
+  <img src="assets/img/hands.png" alt="">
+</div>
+
+</body>
+<audio autoplay loop>
+  <source src="assets/audio/background_music_2.mp3" type="audio/mpeg">
+</audio>
+</html>

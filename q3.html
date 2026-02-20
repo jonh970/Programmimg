@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dungeon of Doors | Question 3</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="assets/img/wizard.png" alt="Wizard" />
+        <div>
+          <h1>Room of Structure</h1>
+          <p>Wizard 3 watches your logic.</p>
+        </div>
+      </div>
+      <span class="badge">Q3 of 4</span>
+    </div>
+
+    <div class="card">
+      <img class="hero" src="assets/img/cave2.png" alt="Cave chamber" />
+      <div class="content">
+        <p class="kicker">
+          A stone tablet glows: “One answer keeps the ceiling calm.”
+        </p>
+
+        <h2>Question 3</h2>
+        <p class="kicker">
+          Which HTML element is best for the main top heading on a page?
+        </p>
+
+        <div class="choices">
+          <a class="btn" href="lose_collapse.html">&lt;h6&gt;</a>
+          <a class="btn" href="q4.html">&lt;h1&gt;</a>
+          <a class="btn" href="lose_poison.html">&lt;p&gt;</a>
+        </div>
+
+        <hr />
+        <div class="footer">
+          <button class="btn" id="startAudioBtn" type="button">Start ambience</button>
+          <a class="btn" href="q2.html">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  let audioStarted = false;
+  function startDungeonAmbience() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    const delay = ctx.createDelay(0.6);
+    delay.delayTime.value = 0.18;
+    const fb = ctx.createGain();
+    fb.gain.value = 0.35;
+    delay.connect(fb);
+    fb.connect(delay);
+    delay.connect(master);
+
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.35;
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    noise.loop = true;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "lowpass";
+    noiseFilter.frequency.value = 420;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.18;
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(master);
+    noiseGain.connect(delay);
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 55;
+
+    const osc2 = ctx.createOscillator();
+    osc2.type = "triangle";
+    osc2.frequency.value = 110;
+
+    const droneFilter = ctx.createBiquadFilter();
+    droneFilter.type = "lowpass";
+    droneFilter.frequency.value = 260;
+
+    const droneGain = ctx.createGain();
+    droneGain.gain.value = 0.16;
+
+    osc.connect(droneFilter);
+    osc2.connect(droneFilter);
+    droneFilter.connect(droneGain);
+    droneGain.connect(master);
+    droneGain.connect(delay);
+
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 0.12;
+
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.05;
+    lfo.connect(lfoGain);
+    lfoGain.connect(droneGain.gain);
+
+    noise.start();
+    osc.start();
+    osc2.start();
+    lfo.start();
+  }
+
+  document.getElementById("startAudioBtn").addEventListener("click", startDungeonAmbience);
+})();
+</script>
+<div class="hands">
+  <img src="assets/img/hands.png" alt="">
+</div>
+
+</body>
+<audio autoplay loop>
+  <source src="assets/audio/background_music_2.mp3" type="audio/mpeg">
+</audio>
+</html>

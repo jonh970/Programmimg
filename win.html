@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dungeon of Doors | WIN</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="assets/img/wizard.png" alt="Wizard" />
+        <div>
+          <h1>YOU WIN</h1>
+          <p>The dungeon recognizes your knowledge.</p>
+        </div>
+      </div>
+      <span class="badge ok">Single Win Condition</span>
+    </div>
+
+    <div class="card">
+      <img class="hero" src="assets/img/cave2.png" alt="Exit light" />
+      <div class="content">
+        <p class="kicker">
+          The final door opens. A calm breeze replaces the dungeon air.
+          The wizards bow in silence as you walk out alive.
+        </p>
+
+        <hr />
+
+        <div class="choices">
+          <a class="btn" href="index.html">Play again</a>
+          <a class="btn" href="q4.html">Return to final gate</a>
+        </div>
+
+        <hr />
+
+        <div class="footer">
+          <button class="btn" id="startAudioBtn" type="button">Start victory ambience</button>
+          <span class="audioHint">This uses the same generated audio method.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  let audioStarted = false;
+  function startVictoryAmbience() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+
+    const master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    // Warmer chord-like drones
+    const freqs = [196, 247, 294]; // G3, B3, D4
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = i === 0 ? "sine" : "triangle";
+      osc.frequency.value = f;
+
+      const g = ctx.createGain();
+      g.gain.value = 0.06;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 900;
+
+      osc.connect(filter);
+      filter.connect(g);
+      g.connect(master);
+
+      osc.start();
+    });
+
+    // Soft shimmer (very quiet)
+    const shimmer = ctx.createOscillator();
+    shimmer.type = "sine";
+    shimmer.frequency.value = 880;
+
+    const sg = ctx.createGain();
+    sg.gain.value = 0.015;
+
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 0.5;
+
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.01;
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(sg.gain);
+
+    shimmer.connect(sg);
+    sg.connect(master);
+
+    shimmer.start();
+    lfo.start();
+  }
+
+  document.getElementById("startAudioBtn").addEventListener("click", startVictoryAmbience);
+})();
+</script>
+
+</body>
+<audio autoplay loop>
+  <source src="assets/audio/background_music_2.mp3" type="audio/mpeg">
+</audio>
+</html>
+

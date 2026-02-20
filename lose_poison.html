@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dungeon of Doors | LOSE (Poison)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="assets/img/wizard.png" alt="Wizard" />
+        <div>
+          <h1>YOU LOSE</h1>
+          <p>The air turns bitter.</p>
+        </div>
+      </div>
+      <span class="badge danger">Loss Condition</span>
+    </div>
+
+    <div class="card">
+      <img class="hero" src="assets/img/cave1.jpeg" alt="Poison mist" />
+      <div class="content">
+        <p class="kicker">
+          The wrong door releases a green mist. Your vision blurs.
+          The wizard’s voice fades: “Incorrect.”
+        </p>
+
+        <div class="choices">
+          <a class="btn" href="index.html">Restart</a>
+          <a class="btn" href="q2.html">Return to Question 2</a>
+        </div>
+
+        <hr />
+        <div class="footer">
+          <button class="btn" id="startAudioBtn" type="button">Start ambience</button>
+          <span class="audioHint">Click to enable background sound.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  let audioStarted = false;
+  function startDungeonAmbience() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 44;
+
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 0.25;
+
+    const g = ctx.createGain();
+    g.gain.value = 0.12;
+
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.05;
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(g.gain);
+
+    osc.connect(g);
+    g.connect(master);
+
+    osc.start();
+    lfo.start();
+  }
+
+  document.getElementById("startAudioBtn").addEventListener("click", startDungeonAmbience);
+})();
+</script>
+<div class="hands">
+  <img src="assets/img/hands.png" alt="">
+</div>
+
+</body>
+<audio autoplay loop>
+  <source src="assets/audio/background_music_2.mp3" type="audio/mpeg">
+</audio>
+</html>
